@@ -10,20 +10,21 @@ const port = process.env.PORT || 3000;
 app.use(express.static(__dirname + '/public'));
 
 rclnodejs.init().then(() => {
-  const node = rclnodejs.createNode('publisher_example_node');
-  const publisher = node.createPublisher('std_msgs/msg/String', 'topic');
-
-  var counter = 0;
-
-  function onConnection(socket) {
-    setInterval(() => {
-      console.log(`Publishing message: Hello ROS ${counter}`);
-      publisher.publish(`Hello ROS ${counter++}`);
-      socket.emit('hello', counter);
-    }, 1000);
-  }
+  const node = rclnodejs.createNode('subscription_message_example_node');
   
-  io.on('connection', onConnection);
+  let count = 0;
+
+  node.createSubscription(
+    'std_msgs/msg/String',
+    'chatter',
+    (state) => {
+      console.log(`Received message No. ${++count}: `, state);
+      // emit an event to all connected sockets(act as a server, not only act as one socket)
+      // https://github.com/socketio/socket.io#simple-and-convenient-api
+      // https://socket.io/docs/v4/server-api/#serversockets
+      io.emit('hello', state);
+    }
+  );
   rclnodejs.spin(node);
 });
 
