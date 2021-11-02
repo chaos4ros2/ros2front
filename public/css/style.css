@@ -14,7 +14,14 @@ html, body {
   height: 44px;
   width: 44px;
   position: absolute;
-  left: 444px;
+  left: 44px;
 }
 
+#counter {
+  display: inline-block;
+  height: 444px;
+  width: 444px;
+  position: absolute;
+  left: 444px;
+}
   
