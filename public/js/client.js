@@ -10,9 +10,18 @@ function echo(arg) {
 
 socket.on("topic_list", list_topic);
 
-var topic_list_div = document.getElementById('topic_list_div');
+var topics_ul = document.getElementById('topics_ul');
 
 function list_topic(topic_list) {
-  const list = topic_list.map( (value) => `<li>${value}</li>`).join('');
-  topic_list_div.innerHTML = `<ul>${list}</ul>`;
+  const list = topic_list.map( (value) => 
+  `<li class="tooltip-element" data-tooltip="0">
+     <a href="#" data-active="4">
+       <div class="icon">
+         <i class='bx bx-notepad'></i>
+         <i class='bx bxs-notepad'></i>
+       </div>
+       <span class="link hide">${value}</span>
+     </a>
+  </li>`).join('');
+  topics_ul.innerHTML = `${list}`;
 }
