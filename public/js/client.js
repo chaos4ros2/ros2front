@@ -1,18 +1,21 @@
 var socket = io();
 
-socket.on("hello", echo);
-
 var counter = document.getElementById('counter');
-
-function echo(arg) {
-  counter.innerHTML = arg.data;
-}
 
 socket.on("topic_list", list_topic);
 
 var topics_ul = document.getElementById('topics_ul');
 
 function list_topic(topic_list) {
+  for (const topic of topic_list) {
+    // delete「/」from topic name
+    const topic_name = topic.slice(1);
+    socket.on(topic_name, function(arg) {
+      console.log(arg);
+      counter.innerHTML = arg.data;
+    });
+  }
+
   const list = topic_list.map( (value) => 
   `<li class="tooltip-element" data-tooltip="0">
      <a href="#" data-active="4">
@@ -24,4 +27,8 @@ function list_topic(topic_list) {
      </a>
   </li>`).join('');
   topics_ul.innerHTML = `${list}`;
+
+  topics_ul.onclick = function () {
+    document.getElementById('counter').style.display = 'block';
+  }
 }

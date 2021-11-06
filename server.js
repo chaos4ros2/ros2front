@@ -9,35 +9,76 @@ const app = express();
 const http = require('http').Server(app);
 var io = require('socket.io')(http);
 const port = process.env.PORT || 3000;
+var topic_list = [];
 
 app.use(express.static(__dirname + '/public'));
 
-setInterval(() => {
-  // get ros2 topic list
-  const topic_list_buffer = execSync(`ros2 topic list`);
-  const topic_list = Buffer.from(topic_list_buffer).toString('utf-8').trim().split('\n');
-  io.emit('topic_list', topic_list);
-}, 1000);
+class SubscriberServer {
+  constructor(node) {
+    this.node = node;
+    // for comparison of numbers of topics
+    this.pre_topic_list = [];    
+  }
 
+  interval() {
+    setInterval(() => {
+      // get ros2 topic list
+      const topic_list_buffer = execSync(`ros2 topic list`);
+      topic_list = Buffer.from(topic_list_buffer).toString('utf-8').trim().split('\n');
+      io.emit('topic_list', topic_list);
+      // The topic will initialize new subscribers as it increases
+      if (this.pre_topic_list.length == 0 || topic_list.length > this.pre_topic_list.length) 
+          this.add_subscriber(topic_list);
+      this.pre_topic_list = topic_list;
+    }, 1000);
+  }
+
+  /**
+   * add subscribers 
+   * 
+   * @param mixed topic_list an array holding the topic names
+  */
+   add_subscriber(topic_list) {
+    // add only differences from existing topics
+    const diff = topic_list.filter(i => this.pre_topic_list.indexOf(i) == -1);
+
+    diff.forEach(element => {
+      // delete「/」from topic name
+      const topic_name = element.slice(1);
+      this.create_subscription(topic_name);
+    }); 
+  }
+  
+  /**
+   * create subscriber
+   * 
+   * @param mixed node ROS2 node instance
+   * @param string topic_name topic name
+  */
+  create_subscription(topic_name) {
+    let count = 0;
+    this.node.createSubscription(
+      'std_msgs/msg/String',
+      topic_name,
+      (state) => {
+        console.log(`Received ${topic_name} message No. ${++count}: `, state);
+        // emit an event to all connected sockets(act as a server, not only act as one socket)
+        // https://github.com/socketio/socket.io#simple-and-convenient-api
+        // https://socket.io/docs/v4/server-api/#serversockets
+        io.emit(topic_name, state);
+      }
+    );
+  }
+
+}
 
 rclnodejs.init().then(() => {
-  const node = rclnodejs.createNode('subscription_message_example_node');
+  const node = new rclnodejs.Node('subscription_message_example_node');
+  const server = new SubscriberServer(node);
   
-  let count = 0;
-
-  node.createSubscription(
-    'std_msgs/msg/String',
-    'chatter',
-    (state) => {
-      console.log(`Received message No. ${++count}: `, state);
-      // emit an event to all connected sockets(act as a server, not only act as one socket)
-      // https://github.com/socketio/socket.io#simple-and-convenient-api
-      // https://socket.io/docs/v4/server-api/#serversockets
-      io.emit('hello', state);
-    }
-  );
-
-  rclnodejs.spin(node);
+  server.interval();
+  
+  node.spin();
 });
 
 http.listen(port, () => console.log('listening on port ' + port));
