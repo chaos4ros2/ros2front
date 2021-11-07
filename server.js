@@ -9,7 +9,6 @@ const app = express();
 const http = require('http').Server(app);
 var io = require('socket.io')(http);
 const port = process.env.PORT || 3000;
-var topic_list = [];
 
 app.use(express.static(__dirname + '/public'));
 
@@ -24,7 +23,7 @@ class SubscriberServer {
     setInterval(() => {
       // get ros2 topic list
       const topic_list_buffer = execSync(`ros2 topic list`);
-      topic_list = Buffer.from(topic_list_buffer).toString('utf-8').trim().split('\n');
+      const topic_list = Buffer.from(topic_list_buffer).toString('utf-8').trim().split('\n');
       io.emit('topic_list', topic_list);
       // The topic will initialize new subscribers as it increases
       if (this.pre_topic_list.length == 0 || topic_list.length > this.pre_topic_list.length) 
