@@ -14,7 +14,7 @@ but can pubisher a topic or create a server with user handle.(Thans to `rclnodej
 It's easy to develop because it built only by `node.js`.
 
 ## Status: Under development
-Please see PROJECT for more details.
+Please see [Projects](https://github.com/chaos4ros2/ros2front/projects/1) for more details.
 
 ## How to test?
 ```
