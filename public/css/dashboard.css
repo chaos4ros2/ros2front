@@ -68,6 +68,8 @@ main h1 {
 }
 
 main .copyright {
+  position: absolute;
+  bottom: 1%;
   margin-top: auto;
   font-size: 0.9rem;
 }

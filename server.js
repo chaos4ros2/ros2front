@@ -1,5 +1,5 @@
 const rclnodejs = require('rclnodejs');
-// const { QoS } = rclnodejs;
+const { QoS } = rclnodejs;
 
 // run command synchronously
 const { execSync } = require('child_process');
@@ -35,30 +35,35 @@ class SubscriberServer {
   /**
    * add subscribers 
    * 
-   * @param mixed topic_list an array holding the topic names
+   * @param {mixed} topic_list an array holding the topic names
   */
    add_subscriber(topic_list) {
     // add only differences from existing topics
     const diff = topic_list.filter(i => this.pre_topic_list.indexOf(i) == -1);
 
     diff.forEach(element => {
+      // get topic type
+      const mesage_type_buffer = execSync(`ros2 topic info ${element}`);
+      const message_type = Buffer.from(mesage_type_buffer).toString('utf-8').trim().split('\n')[0].replace('Type: ', '');
+
       // delete「/」from topic name
       const topic_name = element.slice(1);
-      this.create_subscription(topic_name);
+      this.create_subscription(topic_name, message_type);
     }); 
   }
   
   /**
    * create subscriber
    * 
-   * @param mixed node ROS2 node instance
-   * @param string topic_name topic name
+   * @param {string} topic_name topic name
+   * @param {string} message_type message type
   */
-  create_subscription(topic_name) {
+  create_subscription(topic_name, message_type) {
     let count = 0;
     this.node.createSubscription(
-      'std_msgs/msg/String',
+      message_type,
       topic_name,
+      { qos: QoS.profileSystemDefault },
       (state) => {
         console.log(`Received ${topic_name} message No. ${++count}: `, state);
         // emit an event to all connected sockets(act as a server, not only act as one socket)
