@@ -6,6 +6,9 @@
   <link href='https://unpkg.com/boxicons@2.0.9/css/boxicons.min.css' rel='stylesheet'>
   <link rel="stylesheet" href="./css/style.css" charset="utf-8">
   <link rel="stylesheet" href="./css/dashboard.css" charset="utf-8">
+  <link rel="stylesheet" href="./css/winbox/winbox.css" charset="utf-8">
+  <link rel="stylesheet" href="./css/winbox/themes/white.css" charset="utf-8">
+  <link rel="stylesheet" href="./css/winbox/themes/custom.css" charset="utf-8">
 </head>
 <body>
   <nav>
@@ -78,6 +81,19 @@
     <h1>Ros2front Dashboard</h1>
 
     <div id="main_area">
+
+      <div id="message_store" style="display: none">
+        <div id="content">
+            <h1>Lorem Ipsum</h1>
+            <p>Lorem ipsum [...]</p>
+            <p>Duis autem vel [...]</p>
+            <p>Ut wisi enim [...]</p>
+        </div>
+      </div>
+
+      <div class="button" onclick="new WinBox('ros2front');">ros2front</div>
+
+    </div>
       
     <p class="copyright">
       &copy; 2021 - <span>chaos4ros2</span> All Rights Reserved.
@@ -87,4 +103,5 @@
 </body>
   <script src="./js/socket.io.js" charset="utf-8"></script>
   <script src="./js/client.js" charset="utf-8"></script>
+  <script src="./js/winbox/winbox.min.js" charset="utf-8"></script>
 </html>
