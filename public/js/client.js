@@ -19,7 +19,7 @@ async function list_topic(topic_list) {
     socket.on(topic_name, (arg) => {
       // create topic display area and append it to main area
       if (!document.getElementById(topic_name)) {
-        var display_area = create_area (topic_name);
+        var display_area = create_area(topic_name);
         message_store.appendChild(display_area);
       } else {
         var display_area = document.getElementById(topic_name);
@@ -28,8 +28,8 @@ async function list_topic(topic_list) {
       // Todo1: Add automatic message type detection.
       if (arg.data) display_area.innerHTML = arg.data;
       else if (arg.x) display_area.innerHTML = arg.x;
-      else console.log(arg);
-      show_box (topic_name);
+      // else console.log(arg);
+      init_box(topic_name);
     });
   }
 
@@ -40,7 +40,7 @@ async function list_topic(topic_list) {
          <i class='bx bx-notepad'></i>
          <i class='bx bxs-notepad'></i>
        </div>
-       <span class="link hide">${value}</span>
+       <span class="link hide" onclick="show_box('${value.slice(1)}');">${value}</span>
      </a>
   </li>`).join('');
   topics_ul.innerHTML = `${list}`;
@@ -51,9 +51,9 @@ async function list_topic(topic_list) {
  * create topic display area
  * 
  * @param {string} topic_name topic name
- * @returns 
+ * @returns {node} html element div
  */
-function create_area (topic_name) {
+function create_area(topic_name) {
   const display_div = document.createElement('div');
   display_div.id = topic_name;
   display_div.className = 'display_div';
@@ -64,10 +64,26 @@ function create_area (topic_name) {
  * create a winbox for display and clone display_div to it 
  * 
  * @param {string} topic_name topic name
- * @returns 
- */
- function show_box (topic_name) {
-   if (!winbox_obj[topic_name]) winbox_obj[topic_name] = new WinBox(topic_name);
-   if (document.getElementById(topic_name))
-       winbox_obj[topic_name].mount(document.getElementById(topic_name).cloneNode(true));
+ * @returns {boolean} return "true" to skip the closing(removing)
+*/
+function init_box(topic_name) {
+  if (!winbox_obj[topic_name]) winbox_obj[topic_name] = new WinBox(topic_name, {
+     // https://github.com/nextapps-de/winbox#the-onclose-callback
+     onclose: function() {
+       document.getElementById(this.id).style.display = 'none';
+       return true;
+    }    
+  });
+  if (document.getElementById(topic_name))
+      winbox_obj[topic_name].mount(document.getElementById(topic_name).cloneNode(true));
+}
+
+/**
+ * show a initialized hidden winbox 
+ * 
+ * @param {string} topic_name topic name
+*/
+function show_box(topic_name) {
+  if (winbox_obj[topic_name]) 
+      document.getElementById(winbox_obj[topic_name].id).style.display = '';
 }
