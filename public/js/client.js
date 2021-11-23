@@ -11,7 +11,7 @@ var winbox_obj = {};
 // parent element of topic button 
 var topics_ul = document.getElementById('topics_ul');
 
-async function list_topic(topic_list) {
+function list_topic(topic_list) {
   for (const topic of topic_list) {
     // delete「/」from topic name
     const topic_name = topic.slice(1);
@@ -86,4 +86,16 @@ function init_box(topic_name) {
 function show_box(topic_name) {
   if (winbox_obj[topic_name]) 
       document.getElementById(winbox_obj[topic_name].id).style.display = '';
+}
+
+/**
+ * execute ros2 rqt_graph 
+*/
+async function rqt_graph() {
+  // send a notification to the server
+  const url = 'http://localhost:3000/rqt_graph';
+  const res = await fetch(url);
+
+  const data = await res.text();
+  console.log(data);
 }

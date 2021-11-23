@@ -3,6 +3,8 @@ const { QoS } = rclnodejs;
 
 // run command synchronously
 const { execSync } = require('child_process');
+// run command asynchronous
+const { exec } = require('child_process');
 
 const express = require('express');
 const app = express();
@@ -11,6 +13,12 @@ var io = require('socket.io')(http);
 const port = process.env.PORT || 3000;
 
 app.use(express.static(__dirname + '/public'));
+
+// execute rqt_graph
+app.get('/rqt_graph',function(req, res) {
+  exec(`rqt_graph`);
+  res.send('rqt_graph ok');
+});
 
 class SubscriberServer {
   constructor(node) {
