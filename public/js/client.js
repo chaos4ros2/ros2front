@@ -24,11 +24,8 @@ function list_topic(topic_list) {
       } else {
         var display_area = document.getElementById(topic_name);
       }
-
-      // Todo1: Add automatic message type detection.
-      if (arg.data) display_area.innerHTML = arg.data;
-      else if (arg.x) display_area.innerHTML = arg.x;
-      // else console.log(arg);
+      
+      display_area.innerHTML = recursive_call_message(arg);
       init_box(topic_name);
     });
   }
@@ -98,4 +95,24 @@ async function rqt_graph() {
 
   const data = await res.text();
   console.log(data);
+}
+
+/**
+ * create display messages recursively
+ * 
+ * @param {obj} message_obj message object
+ * @returns {string} formatted messages
+ */
+function recursive_call_message(message_obj) {
+  let message = '';
+  for (const key in message_obj) {
+    if (message_obj.hasOwnProperty(key)) {
+      if (typeof message_obj[key] == 'object') {
+        message += recursive_call_message(message_obj[key])
+      } else {
+        message += `${key} : ${message_obj[key]}<br>`;
+      }
+    }
+  }
+  return message;
 }

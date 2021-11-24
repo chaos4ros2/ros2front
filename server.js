@@ -43,7 +43,7 @@ class SubscriberServer {
   /**
    * add subscribers 
    * 
-   * @param {mixed} topic_list an array holding the topic names
+   * @param {string[]} topic_list an array holding the topic names
   */
    add_subscriber(topic_list) {
     // add only differences from existing topics
