@@ -1,7 +1,7 @@
 # ros2front
 A tool for building and testing ros2 at frontend.
 
-## what is rosfront?
+## what is ros2front?
 Ros2front is a tool for building and testing ros2 at frontend.
 This tool gets inspiration from the following tools:
 * [rclnodejs](https://github.com/RobotWebTools/rclnodejs)
@@ -24,3 +24,6 @@ npm install
 node server.js
 open a browser and access http://localhost:3000/
 ```
+
+## demo
+![ros2front](https://user-images.githubusercontent.com/80691913/146022501-3d04dad4-1712-49ba-a215-954cf8a043f1.gif)
